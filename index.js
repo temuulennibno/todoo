@@ -1,9 +1,17 @@
 import express from "express";
+import fs from "fs";
+import { nanoid } from "nanoid";
 
 const app = express();
 app.use(express.json());
 
-let todos = [{ id: 1, name: "Wake up", checked: false }];
+const fileData = fs.readFileSync("./data.json", "utf-8");
+
+let todos = JSON.parse(fileData);
+
+const updateDataFile = () => {
+  fs.writeFileSync("./data.json", JSON.stringify(todos), "utf-8");
+};
 
 app.get("/api/todos", (req, res) => {
   return res.send(todos);
@@ -15,11 +23,12 @@ app.post("/api/todos", (req, res) => {
     return res.status(400).send({ message: "Body must have name" });
   }
   const newTodo = {
-    id: todos[todos.length - 1].id + 1,
+    id: nanoid(),
     checked: false,
     name,
   };
   todos.push(newTodo);
+  updateDataFile();
   return res.send(newTodo);
 });
 
@@ -30,6 +39,7 @@ app.delete("/api/todos/:id", (req, res) => {
     return res.status(404).send({ message: "Todo not found" });
   }
   todos = todos.filter((todo) => todo.id != id);
+  updateDataFile();
   return res.send(deletingItem);
 });
 
@@ -57,7 +67,17 @@ app.put("/api/todos/:id", (req, res) => {
     }
     return todo;
   });
+  updateDataFile();
   return res.send(updatedTodo);
+});
+
+app.get("/api/todos/:id", (req, res) => {
+  const id = req.params.id; //string
+  const item = todos.find((todo) => todo.id == id);
+  if (!item) {
+    return res.status(404).send({ message: "Todo not found" });
+  }
+  return res.send(item);
 });
 
 app.listen(5400, () => {
