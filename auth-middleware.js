@@ -10,7 +10,7 @@ export const auth = async (req, res, next) => {
 
   let payload = null;
   try {
-    payload = jwt.verify(token, "MySecret");
+    payload = jwt.verify(token, process.env.AUTH_SECRET);
   } catch (e) {
     return res.status(401).send({ message: "Invalid token" });
   }

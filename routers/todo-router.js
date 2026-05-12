@@ -6,7 +6,7 @@ import { TodoModel } from "../models/todo-model.js";
 const router = express.Router();
 
 router.get("/all", async (req, res) => {
-  const todos = await TodoModel.find();
+  const todos = await TodoModel.find().populate("user", "username");
   return res.send(todos);
 });
 

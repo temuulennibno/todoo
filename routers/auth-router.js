@@ -67,7 +67,7 @@ router.post("/signin", async (req, res) => {
   }
   const { password: hashedPassword, ...userWithoutPassword } = existingUser.toJSON();
 
-  const accessToken = jwt.sign(userWithoutPassword, "MySecret", { expiresIn: "5m" });
+  const accessToken = jwt.sign(userWithoutPassword, process.env.AUTH_SECRET, { expiresIn: "5m" });
 
   return res.send({ message: "Successfully signedin", accessToken });
 });
