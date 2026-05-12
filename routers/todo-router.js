@@ -5,6 +5,11 @@ import { TodoModel } from "../models/todo-model.js";
 
 const router = express.Router();
 
+router.get("/all", async (req, res) => {
+  const todos = await TodoModel.find();
+  return res.send(todos);
+});
+
 router.get("/", auth, async (req, res) => {
   const todos = await TodoModel.find({ userId: req.user._id });
   return res.send(todos);
