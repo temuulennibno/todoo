@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { auth } from "../auth-middleware.js";
 import { UserModel } from "../models/user-model.js";
+import { nanoid } from "nanoid";
 
 const router = express.Router();
 
@@ -42,7 +43,7 @@ Password must contain:
   // };
   // users.push(newUser);
   // updateUserFile();
-  const newUser = await UserModel.create({ username, password: hashedPassword });
+  const newUser = await UserModel.create({ _id: nanoid(), username, password: hashedPassword });
   return res.send(newUser);
 });
 
@@ -64,7 +65,7 @@ router.post("/signin", async (req, res) => {
   if (!isMatching) {
     return res.status(401).send({ message: "Wrong credentials" });
   }
-  const { password: hashedPassword, ...userWithoutPassword } = existingUser;
+  const { password: hashedPassword, ...userWithoutPassword } = existingUser.toJSON();
 
   const accessToken = jwt.sign(userWithoutPassword, "MySecret", { expiresIn: "5m" });
 

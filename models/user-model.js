@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
 
 const UserSchema = new mongoose.Schema({
+  _id: { type: String },
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
 });
 
-export const UserModel = mongoose.model("todo", UserSchema);
+export const UserModel = mongoose.model("userss", UserSchema);

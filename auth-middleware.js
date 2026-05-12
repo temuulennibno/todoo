@@ -1,12 +1,9 @@
-import fs from "fs";
 import jwt from "jsonwebtoken";
+import { UserModel } from "./models/user-model.js";
 
-const userData = fs.readFileSync("./users.json", "utf-8");
-let users = JSON.parse(userData);
-
-export const auth = (req, res, next) => {
+export const auth = async (req, res, next) => {
   const rawToken = req.headers.authorization;
-  if (!rawToken.startsWith("Bearer")) {
+  if (!rawToken?.startsWith("Bearer")) {
     return res.status(401).send({ message: "Invalid token" });
   }
   const token = rawToken.split(" ")[1];
@@ -18,7 +15,10 @@ export const auth = (req, res, next) => {
     return res.status(401).send({ message: "Invalid token" });
   }
 
-  const existingUser = users.find((user) => user.id === payload.id);
+  console.log({ payload });
+
+  const existingUser = await UserModel.findOne({ _id: payload._id });
+  console.log({ existingUser });
   req.user = existingUser;
   return next();
 };
